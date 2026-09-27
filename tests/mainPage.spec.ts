@@ -1,15 +1,16 @@
 import { test, expect, Page, Locator } from "@playwright/test";
 
 interface Elements {
-  locator: (page: Page) => Locator,
-  name: string,
-  text?: string,
+  locator: (page: Page) => Locator;
+  name: string;
+  text?: string;
   attribute?: {
-    type: string,
-    value: string
-  }
-
+    type: string;
+    value: string;
+  };
 }
+
+const themeMode = ["light", "dark"];
 
 const elements: Elements[] = [
   {
@@ -158,5 +159,15 @@ test.describe("Тесты главной страницы", () => {
     //    (page.locator("html"))
     //    .toHaveAttribute("data-theme", "light");
     //}
+  });
+
+  themeMode.forEach((value) => {
+    test(`Проверка стиля активного ${value} мода`, async ({ page }) => {
+      await page.evaluate((value) => {
+        document.querySelector("html")?.setAttribute("data-theme", value);
+      }, value);
+
+      await expect(page).toHaveScreenshot(`pageWith${value}Mode.png`);
+    });
   });
 });
